@@ -136,7 +136,6 @@ describe('index', () => {
       .join('\n');
 
     console.log(fileOutput);
-    // console.log('-- TMOD', tMod);
 
     // expect(validator(fixtureValidNonNull)).toBe(true);
     // expect(fileOutput).toMatchInlineSnapshot();
