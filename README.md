@@ -2,25 +2,23 @@
 
 A Typescript transformer that will eventually be able to create runtime validations from Typescript types
 
-```
+```typescript
 type Foo = {
-    bar: string;
-    baz: number | null;
+  bar: string;
+  baz: number | null;
 };
-
-const validator = generateValidator<Foo>();
 
 const invalid = {
-    bar: 123,
+  bar: 123,
 };
 
-const resultInvalid = validator(invalid); // Not of type 'Foo'
+validateType<Foo>(invalid); // Not of type 'Foo', throws an exception
 
-const valid = {
-    bar: "valid",
-    baz: 1
+const valid: object = {
+  bar: 'valid',
+  baz: 1,
 };
 
-const resultValid = validator(valid); // true, valid is Foo
-
+validateType<Foo>(valid); // Type guard, asserts that valid is Foo
+console.log(valid.bar); // 'valid'
 ```
