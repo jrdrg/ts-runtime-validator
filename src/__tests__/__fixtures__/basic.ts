@@ -1,12 +1,17 @@
-import { generateValidator } from '../../index';
+import { validateType } from '../../index';
 
 type BasicType = {
+  count: number;
   message: string;
 };
 
-const validatorStr = generateValidator<string>();
-const validator = generateValidator<BasicType>();
+// should fail
+validateType<string>(123);
 
-const result = validator({
+// should succeed
+validateType<string>('123');
+
+// should succeed
+validateType<BasicType>({
   message: 'foo',
 });

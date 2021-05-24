@@ -65,52 +65,27 @@ describe('index', () => {
     };
   }
 
-  it('should work', () => {
-    // const file = path.resolve(__dirname, './__fixtures__/importedType.ts');
-    const file = path.resolve(__dirname, './__fixtures__/basic.ts');
-    console.log('FILE', file);
-
-    // const transpiled = ts.transpileModule(sourceCode, {});
-    const compilerHost = createCompilerHost({
-      // 'test.ts': sourceCode,
-    });
+  function transpileProgram(filePath: string, compilerHost?: ts.CompilerHost) {
+    const file = path.resolve(__dirname, filePath);
 
     const program = ts.createProgram(
-      //   ['test.ts'],
       [file],
       {
         noEmit: false,
         module: ts.ModuleKind.CommonJS,
         moduleResolution: ts.ModuleResolutionKind.NodeJs,
-      }
-      // compilerHost
+      },
+      compilerHost
     );
 
-    const contents = ts.sys.readFile(file);
-    console.log('CONTENTS', contents);
-
-    // console.log('TRANSPILED', transpiled);
-    // console.log('PROGRAM', program);
     const diag = ts.getPreEmitDiagnostics(program);
-    console.log('DIAG', diag);
-
     if (diag.length > 0) {
       throw new Error(diag[0].messageText.toString());
     }
 
-    // console.log('JS', program.emit());
-
     const transformer = createTransformer(program);
-    // const context = ts.transform(program.getSourceFile('test.ts'), [
-    // const result = ts.transform(program.getSourceFile(file), [transformer]);
-    // console.log('RESULT', result);
 
-    // const tMod = ts.transpileModule(contents, {
-    //   transformers: { before: [transformer] },
-    //   reportDiagnostics: true,
-    // });
-
-    const emittedFiles = {};
+    const emittedFiles: Record<string, string> = {};
     const emitResult = program.emit(
       undefined,
       (
@@ -120,8 +95,8 @@ describe('index', () => {
         onError?: (message: string) => void,
         sourceFiles?: readonly ts.SourceFile[]
       ) => {
-        console.log('writing', fileName, data);
-        emittedFiles[fileName] = data;
+        const relPath = path.relative(__dirname, fileName);
+        emittedFiles[relPath] = data;
       },
       undefined,
       false,
@@ -130,14 +105,67 @@ describe('index', () => {
       }
     );
 
-    console.log('EMIT', emitResult);
+    return emittedFiles;
+  }
+
+  it('should create validators for a basic type', () => {
+    const emittedFiles = transpileProgram('./__fixtures__/basic.ts');
+
     const fileOutput = Object.entries(emittedFiles)
-      .map(([k, v]) => [k, v].join('\n'))
-      .join('\n');
+      .map(([k, v]) => [k, v].join('\n\n'))
+      .join('\n----------\n\n');
 
     console.log(fileOutput);
 
     // expect(validator(fixtureValidNonNull)).toBe(true);
-    // expect(fileOutput).toMatchInlineSnapshot();
+    expect(fileOutput).toMatchInlineSnapshot(`
+      "../index.js
+
+      \\"use strict\\";
+      exports.__esModule = true;
+      exports.validateType = void 0;
+      function validateType(input) { }
+      exports.validateType = validateType;
+
+      ----------
+
+      __fixtures__/basic.js
+
+      \\"use strict\\";
+      exports.__esModule = true;
+      function validate__string(value) {
+          if (typeof value === \\"string\\") {
+              return true;
+          }
+          throw new Error(\\"Value '\\" + value + \\"' is not a string\\");
+      }
+      function validate__number(value) {
+          if (typeof value === \\"number\\") {
+              return true;
+          }
+          throw new Error(\\"Value '\\" + value + \\"' is not a number\\");
+      }
+      function validate__BasicType(input) {
+          if (typeof input !== \\"object\\") {
+              throw new Error(\\"Not an object: \\" + input);
+          }
+          if (input.hasOwnProperty(\\"count\\")) {
+              validate__number(input.count);
+          }
+          if (input.hasOwnProperty(\\"message\\")) {
+              validate__string(input.message);
+          }
+      }
+      var index_1 = require(\\"../../index\\");
+      // should fail
+      validate__string(123);
+      // should succeed
+      validate__string('123');
+      // should succeed
+      validate__BasicType({
+          message: 'foo'
+      });
+      "
+    `);
   });
 });

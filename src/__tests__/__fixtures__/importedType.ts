@@ -1,4 +1,4 @@
-import { generateValidator } from '../../index';
+import { validateType } from '../../index';
 import { Foo } from './types';
 
 // const fixtureValidNonNull = {
@@ -16,4 +16,4 @@ import { Foo } from './types';
 //   baz: 3,
 // };
 
-const validator = generateValidator<Foo>();
+validateType<Foo>({});
