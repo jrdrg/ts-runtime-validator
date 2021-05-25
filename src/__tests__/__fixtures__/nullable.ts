@@ -1,4 +1,4 @@
-import { validateType } from '../../index';
+import { validateType } from '../../validateType';
 
 type NullableBasicType = {
   message: string | null;

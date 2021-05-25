@@ -1,8 +1,11 @@
 {
   "name": "ts-runtime-validator",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.0.1",
+  "description": "A Typescript transformer that generates runtime validation functions from type definitions.",
+  "exports": {
+    ".": "./dist/index.js",
+    "./transformer": "./dist/transformer.js"
+  },
   "scripts": {
     "build": "tsc -p ./tsconfig.json",
     "test": "jest --watch"
