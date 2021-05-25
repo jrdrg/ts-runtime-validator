@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 import createTransformer from '../transformer';
 
-describe('index', () => {
+describe('transformer', () => {
   function fileExists(fileName: string): boolean {
     return ts.sys.fileExists(fileName);
   }
