@@ -115,11 +115,10 @@ describe('index', () => {
       .map(([k, v]) => [k, v].join('\n\n'))
       .join('\n----------\n\n');
 
-    console.log(fileOutput);
+    // console.log(fileOutput);
 
-    // expect(validator(fixtureValidNonNull)).toBe(true);
     expect(fileOutput).toMatchInlineSnapshot(`
-      "../index.js
+      "../validateType.js
 
       \\"use strict\\";
       exports.__esModule = true;
@@ -156,7 +155,7 @@ describe('index', () => {
               validate__string(input.message);
           }
       }
-      var index_1 = require(\\"../../index\\");
+      var validateType_1 = require(\\"../../validateType\\");
       // should fail
       validate__string(123);
       // should succeed

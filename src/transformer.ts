@@ -119,7 +119,7 @@ function visitImportDeclaration(
   node: ts.ImportDeclaration,
   { checker }: TransformerContext
 ): void {
-  console.log('IMPORT', node);
+  console.log('IMPORT', node.getText());
   const importIdentifier = node.importClause?.name;
   if (!importIdentifier) {
     console.error('No import identifier');
@@ -128,7 +128,7 @@ function visitImportDeclaration(
 
   const symbol = checker.getSymbolAtLocation(importIdentifier);
 
-  console.log('IMPORTSYMBOL', symbol);
+  console.log('IMPORTSYMBOL', symbol?.getName());
 
   const modSpec = checker.getSymbolAtLocation(node.moduleSpecifier);
   console.log('Module specifier', modSpec);
@@ -147,13 +147,13 @@ export default function createTransformer(
     - update the import statement to point to wherever the generated validator module is
   */
 
-  console.log(
-    'Transforming files:',
-    program
-      .getSourceFiles()
-      .map((f) => f.fileName)
-      .filter((name) => name.includes('src'))
-  );
+  // console.log(
+  //   'Transforming files:',
+  //   program
+  //     .getSourceFiles()
+  //     .map((f) => f.fileName)
+  //     .filter((name) => name.includes('src'))
+  // );
 
   const validatorsByType: Record<string, ts.FunctionDeclaration> = {};
   const checker = program.getTypeChecker();

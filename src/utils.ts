@@ -16,5 +16,11 @@ export function isValidatorFunction(functionName: string) {
 }
 
 export function validatorFunctionName(type: string) {
-  return `validate__${type}`;
+  const typeName = type
+    .replace(/\s*/g, '')
+    .replace(/[\{\}\:]/g, '$')
+    .replace(/,/g, '_')
+    .replace(/([A-z]+)\[\]/g, '$1Array')
+    .replace(/\[([A-z]+)\]/g, 'T$1T');
+  return `validate__${typeName}`;
 }
