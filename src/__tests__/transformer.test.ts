@@ -111,26 +111,15 @@ describe('transformer', () => {
   it('should create validators for a basic type', () => {
     const emittedFiles = transpileProgram('./__fixtures__/basic.ts');
 
-    const fileOutput = Object.entries(emittedFiles)
-      .map(([k, v]) => [k, v].join('\n\n'))
-      .join('\n----------\n\n');
-
-    // console.log(fileOutput);
-
-    expect(fileOutput).toMatchInlineSnapshot(`
-      "../validateType.js
-
-      \\"use strict\\";
+    expect(emittedFiles).toMatchInlineSnapshot(`
+      Object {
+        "../validateType.js": "\\"use strict\\";
       exports.__esModule = true;
       exports.validateType = void 0;
       function validateType(input) { }
       exports.validateType = validateType;
-
-      ----------
-
-      __fixtures__/basic.js
-
-      \\"use strict\\";
+      ",
+        "__fixtures__/basic.js": "\\"use strict\\";
       exports.__esModule = true;
       function validate__string(value) {
           if (typeof value === \\"string\\") {
@@ -164,7 +153,8 @@ describe('transformer', () => {
       validate__BasicType({
           message: 'foo'
       });
-      "
+      ",
+      }
     `);
   });
 });

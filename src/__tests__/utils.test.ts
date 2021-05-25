@@ -7,6 +7,7 @@ describe('utils', () => {
       ['number', 'validate__number'],
       ['string[]', 'validate__stringArray'],
       ['{a: number, b: string}', 'validate__$a$number_b$string$'],
+      ['{a: number; b: string;}', 'validate__$a$number_b$string_$'],
       [
         '{a: boolean[], b: { c: object, d: string[] }}',
         'validate__$a$booleanArray_b$$c$object_d$stringArray$$',

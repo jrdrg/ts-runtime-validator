@@ -19,7 +19,7 @@ export function validatorFunctionName(type: string) {
   const typeName = type
     .replace(/\s*/g, '')
     .replace(/[\{\}\:]/g, '$')
-    .replace(/,/g, '_')
+    .replace(/[,\;]/g, '_')
     .replace(/([A-z]+)\[\]/g, '$1Array')
     .replace(/\[([A-z]+)\]/g, 'T$1T');
   return `validate__${typeName}`;
