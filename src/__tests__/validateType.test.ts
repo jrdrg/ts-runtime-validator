@@ -27,15 +27,15 @@ describe('validateType', () => {
     it.each([
       [
         () => validateType<string | boolean>(123),
-        "Value '123' is not a string | boolean",
+        'Value is not of type string | boolean: 123',
       ],
       [
         () => validateType<number | boolean>('asdf'),
-        "Value 'asdf' is not a number | boolean",
+        'Value is not of type number | boolean: asdf',
       ],
       [
-        () => validateType<string | boolean>(null),
-        "Value 'null' is not a string | boolean",
+        () => validateType<string | boolean | number>(null),
+        'Value is not of type string | boolean | number: null',
       ],
     ])('should fail if type is invalid', (validator, expected) => {
       expect(() => {
@@ -59,10 +59,13 @@ describe('validateType', () => {
 
   describe('Nullable types', () => {
     it.each([
-      [() => validateType<string | null>(123), "Value '123' is not a string"],
+      [
+        () => validateType<string | null>(123),
+        'Value is not of type string | null: 123',
+      ],
       [
         () => validateType<number | null>('asdf'),
-        "Value 'asdf' is not a number",
+        'Value is not of type number | null: asdf',
       ],
     ])('should fail if type is invalid', (validator, expected) => {
       expect(() => {

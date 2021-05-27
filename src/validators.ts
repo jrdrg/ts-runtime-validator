@@ -6,7 +6,9 @@ import {
   validatorFunctionName,
 } from './utils';
 
+// constants for variable names used in generated code
 const inputParamName = 'input';
+const doNotThrowErrorsArg = 'noThrow';
 
 /*
   Create and store a validation function for the type
@@ -22,8 +24,6 @@ export function createValidatorForType(
     console.log('Found validator for ' + typeName);
     return;
   }
-
-  const type = checker.getTypeFromTypeNode(node);
 
   // if the node is a primitive type, create a validator
   switch (node.kind) {
@@ -47,23 +47,29 @@ export function createValidatorForType(
       if (literal.kind === ts.SyntaxKind.NullKeyword) {
         console.log('Creating null validator for ' + typeName);
         validatorsByType[typeName] = validatorFunctionWrapper(typeName, [
-          nullCheck(),
+          nullCheck(
+            ts.factory.createBlock(
+              [ts.factory.createReturnStatement(ts.factory.createFalse())],
+              true
+            )
+          ),
         ]);
       }
       return;
     }
     default: {
       console.log('Type node kind:', node.kind);
+      if (ts.isUnionTypeNode(node)) {
+        validatorsByType[typeName] = createUnionValidator(node, ctx);
+        return;
+      }
+
+      console.log('Creating object validator for ' + typeName);
+
+      const type = checker.getTypeFromTypeNode(node);
+      validatorsByType[typeName] = createObjectValidator(typeName, type, ctx);
     }
   }
-
-  if (ts.isUnionTypeNode(node)) {
-    validatorsByType[typeName] = createUnionValidator(node, ctx);
-    return;
-  }
-
-  console.log('Creating object validator for ' + typeName);
-  validatorsByType[typeName] = createObjectValidator(typeName, type, ctx);
 }
 
 function validateProperty(
@@ -86,7 +92,6 @@ export function createUnionValidator(
   console.log('Creating union validator for ' + node.getText());
 
   const typeName = node.getText();
-  console.log('types', node.types);
   node.types.forEach((type) => createValidatorForType(type, ctx));
 
   const statements = node.types.reduce<ts.Expression>(
@@ -96,6 +101,7 @@ export function createUnionValidator(
         return ts.factory.createBinaryExpression(
           createValidatorCallExpression(validator, [
             ts.factory.createIdentifier(inputParamName),
+            ts.factory.createTrue(),
           ]),
           ts.factory.createToken(ts.SyntaxKind.BarBarToken),
           validations
@@ -103,6 +109,7 @@ export function createUnionValidator(
       }
       return createValidatorCallExpression(validator, [
         ts.factory.createIdentifier(inputParamName),
+        ts.factory.createTrue(),
       ]);
     },
     null as any // this is somewhat hacky
@@ -114,7 +121,17 @@ export function createUnionValidator(
       [ts.factory.createReturnStatement(ts.factory.createTrue())],
       true
     ),
-    undefined
+    ts.factory.createBlock([
+      wrapThrowInCheck(
+        ts.factory.createBinaryExpression(
+          ts.factory.createStringLiteral(
+            `Value is not of type ${node.getText()}: `
+          ),
+          ts.factory.createToken(ts.SyntaxKind.PlusToken),
+          ts.factory.createIdentifier(inputParamName)
+        )
+      ),
+    ])
   );
 
   return validatorFunctionWrapper(typeName, [performCheck]);
@@ -169,7 +186,7 @@ export function createObjectAssertion(paramName: string) {
     ),
     ts.factory.createBlock(
       [
-        createThrowErrorStatement(
+        wrapThrowInCheck(
           ts.factory.createBinaryExpression(
             ts.factory.createStringLiteral('Not an object: '),
             ts.factory.createToken(ts.SyntaxKind.PlusToken),
@@ -207,13 +224,14 @@ export function createPropertyValidator(
         ts.factory.createIdentifier(parentObjectName),
         ts.factory.createIdentifier(propertyName)
       ),
+      ts.factory.createIdentifier(doNotThrowErrorsArg),
     ])
   );
 
   const throwIfNotOptional = property.questionToken
     ? undefined
     : ts.factory.createBlock([
-        createThrowErrorStatement(
+        wrapThrowInCheck(
           ts.factory.createStringLiteral(
             `Required field is missing: ${propertyName}`
           )
@@ -240,7 +258,7 @@ export function createPropertyValidator(
 export function createPrimitiveValidator(
   type: 'string' | 'number' | 'boolean'
 ): ts.FunctionDeclaration {
-  const throwErrorStatement = createThrowErrorStatement(
+  const throwErrorStatement = wrapThrowInCheck(
     ts.factory.createBinaryExpression(
       ts.factory.createBinaryExpression(
         ts.factory.createStringLiteral("Value '"),
@@ -278,6 +296,15 @@ function validatorFunctionWrapper(
         ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
         undefined
       ),
+      ts.factory.createParameterDeclaration(
+        undefined,
+        undefined,
+        undefined,
+        ts.factory.createIdentifier(doNotThrowErrorsArg),
+        undefined,
+        ts.factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword),
+        undefined
+      ),
     ],
     undefined,
     ts.factory.createBlock(statements, true)
@@ -294,6 +321,22 @@ function createValidatorCallExpression(
     ts.factory.createIdentifier(functionName),
     undefined,
     args
+  );
+}
+
+function wrapThrowInCheck(...expressions: ts.Expression[]) {
+  return ts.factory.createIfStatement(
+    ts.factory.createPrefixUnaryExpression(
+      ts.SyntaxKind.ExclamationToken,
+      ts.factory.createPrefixUnaryExpression(
+        ts.SyntaxKind.ExclamationToken,
+        ts.factory.createIdentifier(doNotThrowErrorsArg)
+      )
+    ),
+    ts.factory.createBlock([
+      ts.factory.createReturnStatement(ts.factory.createFalse()),
+    ]),
+    ts.factory.createBlock([createThrowErrorStatement(...expressions)])
   );
 }
 

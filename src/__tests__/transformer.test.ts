@@ -116,32 +116,70 @@ describe('transformer', () => {
         "../validateType.js": "\\"use strict\\";
       exports.__esModule = true;
       exports.validateType = void 0;
+      /**
+       * Given an input value, performs some validations that the value is
+       * of type T. Throws an Error if input is not of type T, otherwise
+       * acts as an assertion type guard.
+       *
+       * @param input The value that will be checked
+       */
       function validateType(input) { }
       exports.validateType = validateType;
       ",
         "__fixtures__/basic.js": "\\"use strict\\";
       exports.__esModule = true;
-      function validate__string(value) {
-          if (typeof value === \\"string\\") {
+      function validate__string(input, noThrow) {
+          if (typeof input === \\"string\\") {
               return true;
           }
-          throw new Error(\\"Value '\\" + value + \\"' is not a string\\");
+          if (!!noThrow) {
+              return false;
+          }
+          else {
+              throw new Error(\\"Value '\\" + input + \\"' is not a string\\");
+          }
       }
-      function validate__number(value) {
-          if (typeof value === \\"number\\") {
+      function validate__number(input, noThrow) {
+          if (typeof input === \\"number\\") {
               return true;
           }
-          throw new Error(\\"Value '\\" + value + \\"' is not a number\\");
+          if (!!noThrow) {
+              return false;
+          }
+          else {
+              throw new Error(\\"Value '\\" + input + \\"' is not a number\\");
+          }
       }
-      function validate__BasicType(input) {
+      function validate__BasicType(input, noThrow) {
           if (typeof input !== \\"object\\") {
-              throw new Error(\\"Not an object: \\" + input);
+              if (!!noThrow) {
+                  return false;
+              }
+              else {
+                  throw new Error(\\"Not an object: \\" + input);
+              }
           }
           if (input.hasOwnProperty(\\"count\\")) {
-              validate__number(input.count);
+              validate__number(input.count, noThrow);
+          }
+          else {
+              if (!!noThrow) {
+                  return false;
+              }
+              else {
+                  throw new Error(\\"Required field is missing: count\\");
+              }
           }
           if (input.hasOwnProperty(\\"message\\")) {
-              validate__string(input.message);
+              validate__string(input.message, noThrow);
+          }
+          else {
+              if (!!noThrow) {
+                  return false;
+              }
+              else {
+                  throw new Error(\\"Required field is missing: message\\");
+              }
           }
       }
       var validateType_1 = require(\\"../../validateType\\");
@@ -158,7 +196,7 @@ describe('transformer', () => {
     `);
   });
 
-  it.only('should create validators for nullable types', () => {
+  it('should create validators for nullable types', () => {
     const emittedFiles = transpileProgram('./__fixtures__/nullable.ts');
 
     console.log('emitted', emittedFiles);
@@ -180,36 +218,79 @@ describe('transformer', () => {
       ",
         "__fixtures__/nullable.js": "\\"use strict\\";
       exports.__esModule = true;
-      function validate__string(input) {
+      function validate__string(input, noThrow) {
           if (typeof input === \\"string\\") {
               return true;
           }
-          throw new Error(\\"Value '\\" + input + \\"' is not a string\\");
+          if (!!noThrow) {
+              return false;
+          }
+          else {
+              throw new Error(\\"Value '\\" + input + \\"' is not a string\\");
+          }
       }
-      function validate__null(input) {
+      function validate__null(input, noThrow) {
           if (input === null) {
               return true;
           }
+          else {
+              return false;
+          }
       }
-      function validate__stringORnull(input) {
-          if (validate__null(input) || validate__string(input)) {
+      function validate__stringORnull(input, noThrow) {
+          if (validate__null(input, true) || validate__string(input, true)) {
               return true;
           }
+          else {
+              if (!!noThrow) {
+                  return false;
+              }
+              else {
+                  throw new Error(\\"Value is not of type string | null: \\" + input);
+              }
+          }
       }
-      function validate__NullableBasicType(input) {
+      function validate__NullableBasicType(input, noThrow) {
           if (typeof input !== \\"object\\") {
-              throw new Error(\\"Not an object: \\" + input);
+              if (!!noThrow) {
+                  return false;
+              }
+              else {
+                  throw new Error(\\"Not an object: \\" + input);
+              }
           }
           if (input.hasOwnProperty(\\"message\\")) {
-              validate__stringORnull(input.message);
+              validate__stringORnull(input.message, noThrow);
           }
           else {
-              throw new Error(\\"Required field is missing: message\\");
+              if (!!noThrow) {
+                  return false;
+              }
+              else {
+                  throw new Error(\\"Required field is missing: message\\");
+              }
+          }
+      }
+      function validate__NullableBasicTypeORnull(input, noThrow) {
+          if (validate__null(input, true) || validate__NullableBasicType(input, true)) {
+              return true;
+          }
+          else {
+              if (!!noThrow) {
+                  return false;
+              }
+              else {
+                  throw new Error(\\"Value is not of type NullableBasicType | null: \\" + input);
+              }
           }
       }
       var validateType_1 = require(\\"../../validateType\\");
       // should succeed
       validate__NullableBasicType({
+          message: null
+      });
+      // should succeed
+      validate__NullableBasicTypeORnull({
           message: null
       });
       // should fail

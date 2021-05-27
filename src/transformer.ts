@@ -38,15 +38,11 @@ function replaceValidationFunction(
 
   createValidatorForType(typeArg, ctx);
 
-  const callExp = ts.factory.createCallExpression(
+  return ts.factory.createCallExpression(
     ts.factory.createIdentifier(validatorFunctionName(typeName)),
     [],
     node.arguments
   );
-
-  console.log('CALLEXP', callExp);
-
-  return callExp;
 }
 
 export default function createTransformer(
@@ -61,14 +57,6 @@ export default function createTransformer(
     - if not, create it and store in the map
     - update the import statement to point to wherever the generated validator module is
   */
-
-  // console.log(
-  //   'Transforming files:',
-  //   program
-  //     .getSourceFiles()
-  //     .map((f) => f.fileName)
-  //     .filter((name) => name.includes('src'))
-  // );
 
   const validatorsByType: Record<string, ts.FunctionDeclaration> = {};
   const checker = program.getTypeChecker();
