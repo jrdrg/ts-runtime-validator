@@ -1,5 +1,6 @@
 .yarnrc
 .prettierrc
+.github
 jest.config.js
 src
 __tests__
