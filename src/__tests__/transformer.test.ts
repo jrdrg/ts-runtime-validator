@@ -157,4 +157,67 @@ describe('transformer', () => {
       }
     `);
   });
+
+  it.only('should create validators for nullable types', () => {
+    const emittedFiles = transpileProgram('./__fixtures__/nullable.ts');
+
+    console.log('emitted', emittedFiles);
+
+    expect(emittedFiles).toMatchInlineSnapshot(`
+      Object {
+        "../validateType.js": "\\"use strict\\";
+      exports.__esModule = true;
+      exports.validateType = void 0;
+      /**
+       * Given an input value, performs some validations that the value is
+       * of type T. Throws an Error if input is not of type T, otherwise
+       * acts as an assertion type guard.
+       *
+       * @param input The value that will be checked
+       */
+      function validateType(input) { }
+      exports.validateType = validateType;
+      ",
+        "__fixtures__/nullable.js": "\\"use strict\\";
+      exports.__esModule = true;
+      function validate__string(input) {
+          if (typeof input === \\"string\\") {
+              return true;
+          }
+          throw new Error(\\"Value '\\" + input + \\"' is not a string\\");
+      }
+      function validate__null(input) {
+          if (input === null) {
+              return true;
+          }
+      }
+      function validate__stringORnull(input) {
+          if (validate__null(input) || validate__string(input)) {
+              return true;
+          }
+      }
+      function validate__NullableBasicType(input) {
+          if (typeof input !== \\"object\\") {
+              throw new Error(\\"Not an object: \\" + input);
+          }
+          if (input.hasOwnProperty(\\"message\\")) {
+              validate__stringORnull(input.message);
+          }
+          else {
+              throw new Error(\\"Required field is missing: message\\");
+          }
+      }
+      var validateType_1 = require(\\"../../validateType\\");
+      // should succeed
+      validate__NullableBasicType({
+          message: null
+      });
+      // should fail
+      validate__NullableBasicType({
+          message: {}
+      });
+      ",
+      }
+    `);
+  });
 });

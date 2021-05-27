@@ -1,6 +1,8 @@
 import ts from 'typescript';
 
-export function getPropertyName(property: ts.PropertySignature) {
+import { TransformerContext } from './TransformerContext';
+
+export function getPropertyTypeName(property: ts.PropertySignature) {
   return property.type?.getText() || '';
 }
 
@@ -11,12 +13,28 @@ export function getFunctionName(func: ts.FunctionDeclaration) {
   return func.name.text;
 }
 
+/**
+ * Returns true if the function is the one that should be replaced
+ * by the transformer
+ *
+ * @param functionName The function name to check
+ * @returns
+ */
 export function isValidatorFunction(functionName: string) {
   return functionName === 'validateType';
 }
 
+/**
+ * Replaces invalid characters in a type definition so that the
+ * returned string can be used as a function identifier.
+ *
+ * @param type The string representation of a type, like "string", "number[]", "{ foo: boolean }"
+ * @returns
+ */
 export function validatorFunctionName(type: string) {
   const typeName = type
+    .replace(/\&/g, 'AND')
+    .replace(/\|/g, 'OR')
     .replace(/\s*/g, '')
     .replace(/[\{\}\:]/g, '$')
     .replace(/[,\;]/g, '_')

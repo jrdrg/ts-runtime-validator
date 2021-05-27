@@ -13,6 +13,7 @@ describe('utils', () => {
         'validate__$a$booleanArray_b$$c$object_d$stringArray$$',
       ],
       ['[string, number]', 'validate__Tstring_numberT'],
+      ['string | number | boolean', 'validate__stringORnumberORboolean'],
     ])(
       'should generate a function with the type name for %s',
       (type, expected) => {
