@@ -1,14 +1,15 @@
-import { transpileProgramWithTransformer } from './helpers';
+import path from 'path';
+import { transpileProgramWithTransformer } from './__utils__/helpers';
 
 describe('transformer', () => {
   it('should create validators for array types', () => {
     const emittedFiles = transpileProgramWithTransformer(
-      './__fixtures__/arrays.ts'
+      path.resolve(__dirname, './__fixtures__/arrays.ts')
     );
 
     expect(emittedFiles).toMatchInlineSnapshot(`
       Object {
-        "../validateType.js": "\\"use strict\\";
+        "../../validateType.js": "\\"use strict\\";
       exports.__esModule = true;
       exports.validateType = void 0;
       /**
@@ -21,7 +22,7 @@ describe('transformer', () => {
       function validateType(input) { }
       exports.validateType = validateType;
       ",
-        "__fixtures__/arrays.js": "\\"use strict\\";
+        "../__fixtures__/arrays.js": "\\"use strict\\";
       exports.__esModule = true;
       function validate__string(input, noThrow) {
           if (typeof input === \\"string\\") {

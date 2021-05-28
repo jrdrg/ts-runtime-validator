@@ -8,8 +8,9 @@
   },
   "scripts": {
     "build": "tsc -p ./tsconfig.json",
-    "test": "jest",
-    "test:watch": "jest --watch"
+    "clear-cache": "yarn jest --clearCache",
+    "test": "yarn clear-cache && jest",
+    "test:watch": "yarn clear-cache && jest --watch"
   },
   "author": "jrdrg",
   "license": "ISC",

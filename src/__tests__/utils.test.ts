@@ -8,6 +8,7 @@ describe('utils', () => {
       ['string[]', 'validate__stringArray'],
       ['{a: number, b: string}', 'validate__$a$number_b$string$'],
       ['{a: number; b: string;}', 'validate__$a$number_b$string_$'],
+      ['{a: number; b?: string;}', 'validate__$a$number_bO$string_$'],
       [
         '{a: boolean[], b: { c: object, d: string[] }}',
         'validate__$a$booleanArray_b$$c$object_d$stringArray$$',

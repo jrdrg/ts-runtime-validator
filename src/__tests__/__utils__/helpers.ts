@@ -1,15 +1,13 @@
 import * as path from 'path';
 import * as ts from 'typescript';
-import createTransformer from '../transformer';
+import createTransformer from '../../transformer';
 
 export function transpileProgramWithTransformer(
   filePath: string,
   compilerHost?: ts.CompilerHost
 ) {
-  const file = path.resolve(__dirname, filePath);
-
   const program = ts.createProgram(
-    [file],
+    [filePath],
     {
       noEmit: false,
       module: ts.ModuleKind.CommonJS,
@@ -20,7 +18,7 @@ export function transpileProgramWithTransformer(
 
   const diag = ts.getPreEmitDiagnostics(program);
   if (diag.length > 0) {
-    throw new Error(diag[0].messageText.toString());
+    throw new Error(JSON.stringify(diag[0].messageText));
   }
 
   const transformer = createTransformer(program);

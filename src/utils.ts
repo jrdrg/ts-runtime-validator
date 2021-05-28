@@ -35,6 +35,7 @@ export function validatorFunctionName(type: string) {
   const typeName = type
     .replace(/\&/g, 'AND')
     .replace(/\|/g, 'OR')
+    .replace(/\?/g, 'O')
     .replace(/\s*/g, '')
     .replace(/[\{\}\:]/g, '$')
     .replace(/[,\;]/g, '_')

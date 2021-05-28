@@ -49,13 +49,13 @@ export default function createTransformer(
   program: ts.Program
 ): ts.TransformerFactory<ts.SourceFile> {
   /*
-  create a map of typename to validator
-  for each node
-  - if it's "validateType"
-    - figure out the type it's validating
-    - check if the validator exists in the map
-    - if not, create it and store in the map
-    - update the import statement to point to wherever the generated validator module is
+    create a map of typename to validator
+    for each node
+    - if it's "validateType"
+      - figure out the type it's validating
+      - check if the validator exists in the map
+      - if not, create it and store in the map
+      - update the import statement to point to wherever the generated validator module is
   */
 
   const validatorsByType: Record<string, ts.FunctionDeclaration> = {};

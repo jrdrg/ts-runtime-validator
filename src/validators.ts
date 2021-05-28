@@ -75,6 +75,7 @@ export function generateValidatorForType(
       }
       return;
     }
+    case ts.SyntaxKind.TypeLiteral:
     case ts.SyntaxKind.TypeReference: {
       console.log('Creating object validator for ' + typeName);
       const type = checker.getTypeFromTypeNode(node);

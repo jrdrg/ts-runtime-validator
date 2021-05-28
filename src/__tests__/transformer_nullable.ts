@@ -1,14 +1,15 @@
-import { transpileProgramWithTransformer } from './helpers';
+import path from 'path';
+import { transpileProgramWithTransformer } from './__utils__/helpers';
 
 describe('transformer', () => {
   it('should create validators for nullable types', () => {
     const emittedFiles = transpileProgramWithTransformer(
-      './__fixtures__/nullable.ts'
+      path.resolve(__dirname, './__fixtures__/nullable.ts')
     );
 
     expect(emittedFiles).toMatchInlineSnapshot(`
       Object {
-        "../validateType.js": "\\"use strict\\";
+        "../../validateType.js": "\\"use strict\\";
       exports.__esModule = true;
       exports.validateType = void 0;
       /**
@@ -21,7 +22,7 @@ describe('transformer', () => {
       function validateType(input) { }
       exports.validateType = validateType;
       ",
-        "__fixtures__/nullable.js": "\\"use strict\\";
+        "../__fixtures__/nullable.js": "\\"use strict\\";
       exports.__esModule = true;
       function validate__string(input, noThrow) {
           if (typeof input === \\"string\\") {

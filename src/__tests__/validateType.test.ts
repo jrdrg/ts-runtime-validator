@@ -87,6 +87,32 @@ describe('validateType', () => {
     });
   });
 
+  describe('Optional types', () => {
+    it.each([
+      [
+        () => validateType<{ a: string; b?: string }>({}),
+        'Required field is missing: a',
+      ],
+      [
+        () => validateType<{ a: string; b?: string }>({ a: 3 }),
+        "Value '3' is not a string",
+      ],
+    ])('should fail if type is invalid', (validator, expected) => {
+      expect(() => {
+        validator();
+      }).toThrowError(expected);
+    });
+
+    it.each([
+      () => validateType<{ a: string; b?: string }>({ a: 'A' }),
+      () => validateType<{ a?: string; b?: string }>({}),
+    ])('should succeed if the type is valid', (validator) => {
+      expect(() => {
+        validator();
+      }).not.toThrow();
+    });
+  });
+
   describe('Complex types', () => {
     it.each([
       [() => validateType<{ a: string }>('asdf'), 'Not an object: asdf'],
