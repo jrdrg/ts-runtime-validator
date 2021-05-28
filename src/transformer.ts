@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import { TransformerContext } from './TransformerContext';
 import { isValidatorFunction, validatorFunctionName } from './utils';
-import { createValidatorForType } from './validators';
+import { generateValidatorForType } from './validators';
 
 function visitImportDeclaration(
   node: ts.ImportDeclaration,
@@ -22,24 +22,24 @@ function visitImportDeclaration(
   console.log('Module specifier', modSpec);
 }
 
+/*
+  Replaces validateType<Foo>(...) with validate__Foo(...)
+  and creates validate__Foo if it doesn't already exist
+*/
 function replaceValidationFunction(
   node: ts.CallExpression,
   ctx: TransformerContext
 ) {
-  const { checker } = ctx;
   const typeArg = node.typeArguments?.[0];
 
   if (!typeArg) {
-    console.error('Invalid call of validation function:', node.getText());
-    return node;
+    throw new Error('Invalid call of validation function:' + node.getText());
   }
 
-  const typeName = typeArg.getText();
-
-  createValidatorForType(typeArg, ctx);
+  generateValidatorForType(typeArg, ctx);
 
   return ts.factory.createCallExpression(
-    ts.factory.createIdentifier(validatorFunctionName(typeName)),
+    ts.factory.createIdentifier(validatorFunctionName(typeArg.getText())),
     [],
     node.arguments
   );
@@ -81,8 +81,6 @@ export default function createTransformer(
             .getTypeAtLocation(signature?.getDeclaration())
             .getSymbol()
             ?.getName() || '<unknown>';
-
-        console.log('FN NAME', name, isValidatorFunction(name));
 
         if (isValidatorFunction(name)) {
           return replaceValidationFunction(node, transformerCtx);

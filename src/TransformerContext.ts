@@ -1,5 +1,7 @@
 import * as ts from 'typescript';
 
+import { getPropertyTypeName } from './utils';
+
 type ValidatorCache = Record<string, ts.FunctionDeclaration>;
 
 export class TransformerContext {
@@ -14,11 +16,15 @@ export class TransformerContext {
     this.validatorsByType = args.validatorsByType;
   }
 
-  getValidatorForType(type: ts.TypeNode) {
-    return this.validatorsByType[type.getText()];
+  getValidatorForType(node: ts.TypeNode) {
+    return this.validatorsByType[node.getText()];
   }
 
-  setValidatorForType(type: ts.TypeNode, validator: ts.FunctionDeclaration) {
-    this.validatorsByType[type.getText()] = validator;
+  getValidatorForProperty(property: ts.PropertySignature) {
+    return this.validatorsByType[getPropertyTypeName(property)];
+  }
+
+  setValidatorForType(node: ts.TypeNode, validator: ts.FunctionDeclaration) {
+    this.validatorsByType[node.getText()] = validator;
   }
 }

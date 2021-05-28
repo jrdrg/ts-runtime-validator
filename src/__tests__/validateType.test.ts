@@ -94,8 +94,8 @@ describe('validateType', () => {
         () => validateType<{ a: string }>({ a: true }),
         "Value 'true' is not a string",
       ],
-      // [() => validateType<number[]>(1), 'Not a number[]'],
-      // [() => validateType<string[]>([1, '2']), 'Not a string[]'],
+      [() => validateType<number[]>(1), 'Not of type number[]: 1'],
+      [() => validateType<string[]>([1, '2']), 'Not of type string[]: 1,2'],
       [
         () => validateType<{ a: boolean; b: number }>({ a: true }),
         'Required field is missing: b',
@@ -109,6 +109,7 @@ describe('validateType', () => {
     it.each([
       () => validateType<number[]>([123]),
       () => validateType<{ a: boolean }>({ a: true }),
+      () => validateType<{ a: boolean } | null>(null),
       () => validateType<string[]>(['1', '2']),
     ])('should succeed if the type is valid', (validator) => {
       expect(() => {
