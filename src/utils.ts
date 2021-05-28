@@ -37,6 +37,7 @@ export function validatorFunctionName(type: string) {
     .replace(/\|/g, 'OR')
     .replace(/\?/g, 'O')
     .replace(/\s*/g, '')
+    .replace(/(\{.*?\})\[\]/g, '$1Array')
     .replace(/[\{\}\:]/g, '$')
     .replace(/[,\;]/g, '_')
     .replace(/([A-z]+)\[\]/g, '$1Array')

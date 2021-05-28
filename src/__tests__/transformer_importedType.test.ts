@@ -76,8 +76,9 @@ describe('transformer', () => {
                   throw new Error(\\"Not an object: \\" + input);
               }
           }
+          var isValid = true;
           if (input.hasOwnProperty(\\"bar\\")) {
-              validate__string(input.bar, noThrow);
+              isValid = isValid && validate__string(input.bar, noThrow);
           }
           else {
               if (!!noThrow) {
@@ -88,7 +89,7 @@ describe('transformer', () => {
               }
           }
           if (input.hasOwnProperty(\\"baz\\")) {
-              validate__numberORnull(input.baz, noThrow);
+              isValid = isValid && validate__numberORnull(input.baz, noThrow);
           }
           else {
               if (!!noThrow) {
@@ -98,6 +99,7 @@ describe('transformer', () => {
                   throw new Error(\\"Required field is missing: baz\\");
               }
           }
+          return isValid;
       }
       function validate__FooArray(input, noThrow) {
           if (Array.isArray(input) && input.every(function (i) { return validate__Foo(i, true); })) {
@@ -108,7 +110,7 @@ describe('transformer', () => {
                   return false;
               }
               else {
-                  throw new Error(\\"Not of type Foo[]: \\" + String(input).substring(0, 20));
+                  throw new Error(\\"Not of type Foo[]: \\" + JSON.stringify(input).substring(0, 20));
               }
           }
       }
@@ -121,8 +123,9 @@ describe('transformer', () => {
                   throw new Error(\\"Not an object: \\" + input);
               }
           }
+          var isValid = true;
           if (input.hasOwnProperty(\\"foo\\")) {
-              validate__FooArray(input.foo, noThrow);
+              isValid = isValid && validate__FooArray(input.foo, noThrow);
           }
           else {
               if (!!noThrow) {
@@ -133,7 +136,7 @@ describe('transformer', () => {
               }
           }
           if (input.hasOwnProperty(\\"bar\\")) {
-              validate__number(input.bar, noThrow);
+              isValid = isValid && validate__number(input.bar, noThrow);
           }
           else {
               if (!!noThrow) {
@@ -143,6 +146,7 @@ describe('transformer', () => {
                   throw new Error(\\"Required field is missing: bar\\");
               }
           }
+          return isValid;
       }
       var validateType_1 = require(\\"../../validateType\\");
       validate__Foo({});

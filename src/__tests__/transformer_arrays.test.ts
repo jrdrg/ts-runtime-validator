@@ -44,16 +44,74 @@ describe('transformer', () => {
                   return false;
               }
               else {
-                  throw new Error(\\"Not of type string[]: \\" + String(input).substring(0, 20));
+                  throw new Error(\\"Not of type string[]: \\" + JSON.stringify(input).substring(0, 20));
+              }
+          }
+      }
+      function validate__number(input, noThrow) {
+          if (typeof input === \\"number\\") {
+              return true;
+          }
+          if (!!noThrow) {
+              return false;
+          }
+          else {
+              throw new Error(\\"Value '\\" + input + \\"' is not a number\\");
+          }
+      }
+      function validate__numberArray(input, noThrow) {
+          if (Array.isArray(input) && input.every(function (i) { return validate__number(i, true); })) {
+              return true;
+          }
+          else {
+              if (!!noThrow) {
+                  return false;
+              }
+              else {
+                  throw new Error(\\"Not of type number[]: \\" + JSON.stringify(input).substring(0, 20));
+              }
+          }
+      }
+      function validate__$a$string$(input, noThrow) {
+          if (typeof input !== \\"object\\") {
+              if (!!noThrow) {
+                  return false;
+              }
+              else {
+                  throw new Error(\\"Not an object: \\" + input);
+              }
+          }
+          var isValid = true;
+          if (input.hasOwnProperty(\\"a\\")) {
+              isValid = isValid && validate__string(input.a, noThrow);
+          }
+          else {
+              if (!!noThrow) {
+                  return false;
+              }
+              else {
+                  throw new Error(\\"Required field is missing: a\\");
+              }
+          }
+          return isValid;
+      }
+      function validate__$a$string$Array(input, noThrow) {
+          if (Array.isArray(input) && input.every(function (i) { return validate__$a$string$(i, true); })) {
+              return true;
+          }
+          else {
+              if (!!noThrow) {
+                  return false;
+              }
+              else {
+                  throw new Error(\\"Not of type { a: string }[]: \\" + JSON.stringify(input).substring(0, 20));
               }
           }
       }
       var validateType_1 = require(\\"../../validateType\\");
-      // should fail
       validate__stringArray('a');
-      // should succeed
-      validate__stringArray(['a']);
-      validate__stringArray(['a', 'b']);
+      validate__numberArray([1, 2, 3]);
+      validate__$a$string$Array({ a: [1] });
       ",
       }
     `);

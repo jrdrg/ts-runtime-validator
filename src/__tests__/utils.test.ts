@@ -15,6 +15,15 @@ describe('utils', () => {
       ],
       ['[string, number]', 'validate__Tstring_numberT'],
       ['string | number | boolean', 'validate__stringORnumberORboolean'],
+      ['{ a: string }[]', 'validate__$a$string$Array'],
+      [
+        '{ a: string, b: number[] }[]',
+        'validate__$a$string_b$numberArray$Array',
+      ],
+      [
+        '{ a: string, b: { c: number[] } }[]',
+        'validate__$a$string_b$$c$numberArray$$Array',
+      ],
     ])(
       'should generate a function with the type name for %s',
       (type, expected) => {

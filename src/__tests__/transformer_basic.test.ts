@@ -55,8 +55,9 @@ describe('transformer', () => {
                   throw new Error(\\"Not an object: \\" + input);
               }
           }
+          var isValid = true;
           if (input.hasOwnProperty(\\"count\\")) {
-              validate__number(input.count, noThrow);
+              isValid = isValid && validate__number(input.count, noThrow);
           }
           else {
               if (!!noThrow) {
@@ -67,7 +68,7 @@ describe('transformer', () => {
               }
           }
           if (input.hasOwnProperty(\\"message\\")) {
-              validate__string(input.message, noThrow);
+              isValid = isValid && validate__string(input.message, noThrow);
           }
           else {
               if (!!noThrow) {
@@ -77,6 +78,7 @@ describe('transformer', () => {
                   throw new Error(\\"Required field is missing: message\\");
               }
           }
+          return isValid;
       }
       var validateType_1 = require(\\"../../validateType\\");
       // should fail

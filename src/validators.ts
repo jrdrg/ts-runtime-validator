@@ -256,7 +256,22 @@ export function createObjectValidator(
 
   return validatorFunctionWrapper(typeName, [
     createObjectAssertion('input'),
+    ts.factory.createVariableStatement(
+      undefined,
+      ts.factory.createVariableDeclarationList(
+        [
+          ts.factory.createVariableDeclaration(
+            ts.factory.createIdentifier('isValid'),
+            undefined,
+            undefined,
+            ts.factory.createTrue()
+          ),
+        ],
+        ts.NodeFlags.Let
+      )
+    ),
     ...propValidationStatements,
+    ts.factory.createReturnStatement(ts.factory.createIdentifier('isValid')),
   ]);
 }
 
@@ -302,14 +317,23 @@ export function createPropertyValidator(
     );
   }
 
+  // isValid = isValid && <validator>
   const callValidatorFunction = ts.factory.createExpressionStatement(
-    createValidatorCallExpression(validator, [
-      ts.factory.createPropertyAccessExpression(
-        ts.factory.createIdentifier(parentObjectName),
-        ts.factory.createIdentifier(propertyName)
-      ),
-      ts.factory.createIdentifier(doNotThrowErrorsArg),
-    ])
+    ts.factory.createBinaryExpression(
+      ts.factory.createIdentifier('isValid'),
+      ts.factory.createToken(ts.SyntaxKind.EqualsToken),
+      ts.factory.createBinaryExpression(
+        ts.factory.createIdentifier('isValid'),
+        ts.factory.createToken(ts.SyntaxKind.AmpersandAmpersandToken),
+        createValidatorCallExpression(validator, [
+          ts.factory.createPropertyAccessExpression(
+            ts.factory.createIdentifier(parentObjectName),
+            ts.factory.createIdentifier(propertyName)
+          ),
+          ts.factory.createIdentifier(doNotThrowErrorsArg),
+        ])
+      )
+    )
   );
 
   const throwIfNotOptional = property.questionToken

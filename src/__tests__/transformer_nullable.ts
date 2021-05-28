@@ -65,8 +65,9 @@ describe('transformer', () => {
                   throw new Error(\\"Not an object: \\" + input);
               }
           }
+          var isValid = true;
           if (input.hasOwnProperty(\\"message\\")) {
-              validate__stringORnull(input.message, noThrow);
+              isValid = isValid && validate__stringORnull(input.message, noThrow);
           }
           else {
               if (!!noThrow) {
@@ -76,6 +77,7 @@ describe('transformer', () => {
                   throw new Error(\\"Required field is missing: message\\");
               }
           }
+          return isValid;
       }
       function validate__NullableBasicTypeORnull(input, noThrow) {
           if (validate__null(input, true) || validate__NullableBasicType(input, true)) {

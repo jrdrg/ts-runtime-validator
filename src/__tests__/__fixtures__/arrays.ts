@@ -1,8 +1,5 @@
 import { validateType } from '../../validateType';
 
-// should fail
 validateType<string[]>('a');
-
-// should succeed
-validateType<string[]>(['a']);
-validateType<string[]>(['a', 'b']);
+validateType<number[]>([1, 2, 3]);
+validateType<{ a: string }[]>({ a: [1] });

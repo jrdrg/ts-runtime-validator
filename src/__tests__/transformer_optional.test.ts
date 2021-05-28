@@ -44,9 +44,11 @@ describe('transformer', () => {
                   throw new Error(\\"Not an object: \\" + input);
               }
           }
+          var isValid = true;
           if (input.hasOwnProperty(\\"message\\")) {
-              validate__string(input.message, noThrow);
+              isValid = isValid && validate__string(input.message, noThrow);
           }
+          return isValid;
       }
       function validate__OptionalBasicInterface(input, noThrow) {
           if (typeof input !== \\"object\\") {
@@ -57,9 +59,11 @@ describe('transformer', () => {
                   throw new Error(\\"Not an object: \\" + input);
               }
           }
+          var isValid = true;
           if (input.hasOwnProperty(\\"message\\")) {
-              validate__string(input.message, noThrow);
+              isValid = isValid && validate__string(input.message, noThrow);
           }
+          return isValid;
       }
       function validate__$a$string_bO$string$(input, noThrow) {
           if (typeof input !== \\"object\\") {
@@ -70,8 +74,9 @@ describe('transformer', () => {
                   throw new Error(\\"Not an object: \\" + input);
               }
           }
+          var isValid = true;
           if (input.hasOwnProperty(\\"a\\")) {
-              validate__string(input.a, noThrow);
+              isValid = isValid && validate__string(input.a, noThrow);
           }
           else {
               if (!!noThrow) {
@@ -82,8 +87,9 @@ describe('transformer', () => {
               }
           }
           if (input.hasOwnProperty(\\"b\\")) {
-              validate__string(input.b, noThrow);
+              isValid = isValid && validate__string(input.b, noThrow);
           }
+          return isValid;
       }
       var validateType_1 = require(\\"../../validateType\\");
       validate__OptionalBasicType({});

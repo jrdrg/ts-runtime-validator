@@ -130,7 +130,10 @@ export function createStringRepresentation(inputParam: string) {
   return ts.factory.createCallExpression(
     ts.factory.createPropertyAccessExpression(
       ts.factory.createCallExpression(
-        ts.factory.createIdentifier('String'),
+        ts.factory.createPropertyAccessExpression(
+          ts.factory.createIdentifier('JSON'),
+          ts.factory.createIdentifier('stringify')
+        ),
         undefined,
         [ts.factory.createIdentifier(inputParam)]
       ),
