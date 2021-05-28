@@ -75,6 +75,12 @@ export function generateValidatorForType(
       }
       return;
     }
+    case ts.SyntaxKind.TypeReference: {
+      console.log('Creating object validator for ' + typeName);
+      const type = checker.getTypeFromTypeNode(node);
+      ctx.setValidatorForType(node, createObjectValidator(typeName, type, ctx));
+      return;
+    }
     default: {
       if (ts.isUnionTypeNode(node)) {
         ctx.setValidatorForType(node, createUnionValidator(node, ctx));

@@ -19,7 +19,7 @@ function visitImportDeclaration(
   console.log('IMPORTSYMBOL', symbol?.getName());
 
   const modSpec = checker.getSymbolAtLocation(node.moduleSpecifier);
-  console.log('Module specifier', modSpec);
+  console.log('Module specifier', modSpec?.name);
 }
 
 /*

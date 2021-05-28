@@ -94,6 +94,7 @@ describe('validateType', () => {
         () => validateType<{ a: string }>({ a: true }),
         "Value 'true' is not a string",
       ],
+      [() => validateType<{ a: boolean } | null>({ b: 1 }), ''],
       [() => validateType<number[]>(1), 'Not of type number[]: 1'],
       [() => validateType<string[]>([1, '2']), 'Not of type string[]: 1,2'],
       [
