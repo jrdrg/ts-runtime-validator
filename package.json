@@ -1,6 +1,6 @@
 {
   "name": "ts-runtime-validator",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A Typescript transformer that generates runtime validation functions from type definitions.",
   "exports": {
     ".": "./dist/index.js",
